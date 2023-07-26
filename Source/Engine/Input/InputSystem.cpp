@@ -3,6 +3,7 @@
 
 namespace kiko
 {
+	InputSystem g_inputSystem;
 	bool InputSystem::Initialize()
 	{
 		int numKeys;
@@ -18,7 +19,6 @@ namespace kiko
 	}
 	void InputSystem::Shutdown()
 	{
-		
 	}
 
 	void InputSystem::Update()
@@ -33,7 +33,6 @@ namespace kiko
 		// copy sdl keyboard state to input system keyboard state
 		std::copy(keyboardState, keyboardState + m_keyboardState.size(), m_keyboardState
 			.begin());
-	
 
 		int x, y;
 		uint32_t buttons = SDL_GetMouseState(&x, &y);

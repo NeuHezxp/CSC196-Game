@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 namespace kiko
 {
@@ -15,7 +16,8 @@ namespace kiko
 		void Add(void* address, size_t size); //adds allocation to the list
 		void Remove(void* address, size_t);
 
-		void DisplayInfo();
+		static void DisplayInfo();
+		static bool Initialize();
 
 	private:
 		size_t m_bytesAllocated = 0;

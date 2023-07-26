@@ -15,9 +15,6 @@ namespace kiko
 		Vector2(float x, float y) : x{ x }, y{ y } {}
 		Vector2(int x, int y) : x{ (float)x }, y{ (float)y } {}
 
-
-
-
 		Vector2 operator + (const Vector2& v) const { return Vector2(x + v.x, y + v.y); }
 		Vector2 operator - (const Vector2& v) const { return Vector2(x - v.x, y - v.y); }
 		Vector2 operator / (const Vector2& v) const { return Vector2(x / v.x, y / v.y); }
@@ -41,8 +38,7 @@ namespace kiko
 		float DistanceSqr(const Vector2& v) { return (v - *this).LengthSqr(); }
 		float Distance(const Vector2& v) { return sqrt(LengthSqr()); }
 
-
-		Vector2 Normalized()const {return *this / length(); } /// becomes 1.0 when normalized
+		Vector2 Normalized()const { return *this / length(); } /// becomes 1.0 when normalized
 		void Normalize() { *this /= length(); }
 
 		float Angle() const { return std::atan2f(y, x); }
@@ -52,11 +48,10 @@ namespace kiko
 	};
 	inline Vector2 Vector2::Rotate(float radians) const
 	{
-		float _x  = x * std::cos(radians) - y * std::sin(radians);
-		float _y  = x * std::sin(radians) + y * std::cos(radians); //MATH!!
+		float _x = x * std::cos(radians) - y * std::sin(radians);
+		float _y = x * std::sin(radians) + y * std::cos(radians); //MATH!!
 		return { _x,_y };
 	}
-
 
 	inline 	std::istream& operator >> (std::istream& stream, Vector2& v)
 	{

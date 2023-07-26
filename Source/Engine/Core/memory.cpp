@@ -31,9 +31,15 @@ namespace kiko
 		m_numAllocations--;
 	}
 
+	bool MemoryTracker::Initialize()
+	{
+		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+		return true;
+	}
+
 	void MemoryTracker::DisplayInfo()
 	{
-		cout << "current bytes allocated: " << m_bytesAllocated << endl;
-		cout << "current number allocations: " << m_numAllocations << endl;
+		_CrtMemDumpAllObjectsSince(NULL);
 	}
 }

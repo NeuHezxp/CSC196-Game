@@ -28,7 +28,6 @@ namespace kiko
 		float GetTime() const { return m_time; }
 		float GetDeltaTime() const { return m_deltaTime; }
 
-
 	private:
 		float m_time;
 		float m_deltaTime;

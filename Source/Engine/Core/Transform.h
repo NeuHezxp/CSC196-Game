@@ -2,7 +2,8 @@
 #include "vector2.h"
 
 namespace kiko
-{;
+{
+	;
 	class Transform
 	{
 	public:
@@ -13,8 +14,8 @@ namespace kiko
 	public:
 		Transform(const vec2& position, float rotation, float scale = 1) :
 			position{ position },
-			rotation{rotation},
-			scale{scale}
+			rotation{ rotation },
+			scale{ scale }
 		{}
 	};
 }

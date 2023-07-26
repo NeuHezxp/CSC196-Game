@@ -13,4 +13,24 @@ namespace kiko
 	{
 		return (value % max) + ((value < 0) ? max : 0);
 	}
+	inline float Wrap(float value, float max)
+	{
+		return std::fmod(value, max) + ((value < 0) ? max : 0);
+	}
+	template<typename T>
+	inline T Max(T a, T b)
+	{
+		return (a > b) ? a : b;
+	}
+	template<typename T>
+	inline T min(T a, T b)
+	{
+		return (a < b) ? a : b;
+	}
+	template <typename T>
+	inline T Clamp(T value, T min, T max)
+	{
+		if (min > max) std::swap(min, max);
+		return (value < min) ? min : (value > max) ? max : value;
+	}
 }
