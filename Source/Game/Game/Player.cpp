@@ -11,46 +11,88 @@
 
 void Player::Update(float dt)
 {
-	Actor::Update(dt);
+    Actor::Update(dt);
 
-	//movement
-	float rotate = 0;
-	if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_A)) rotate = -1;
-	if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_D)) rotate = 1;
-	m_transform.rotation += rotate * m_turnRate * kiko::g_time.GetDeltaTime();
+    //movement
+    float rotate = 0;
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_A)) rotate = -1;
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_D)) rotate = 1;
+    m_transform.rotation += rotate * m_turnRate * kiko::g_time.GetDeltaTime();
 
-	float thrust = 0;
-	if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_W)) thrust = 1;
+    float thrust = 0; // forward movement
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_W)) thrust = 1;
 
-	kiko::vec2 forward = kiko::vec2{ 0, -1 }.Rotate(m_transform.rotation);
-	m_transform.position += forward * m_speed * thrust * kiko::g_time.GetDeltaTime();
-	///for out of bounds
-	m_transform.position.x = kiko::Wrap(m_transform.position.x, (float)kiko::g_renderer.getWidth());
-	m_transform.position.y = kiko::Wrap(m_transform.position.y, (float)kiko::g_renderer.getHeight());
-	//Actor::Update(dt);
+    kiko::vec2 forward = kiko::vec2{ 0, -1 }.Rotate(m_transform.rotation);
+    AddForce(forward * m_speed * thrust);
+    //m_transform.position += forward * m_speed * thrust * kiko::g_time.GetDeltaTime();
 
-	//fire weapon
-	if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE) && !kiko::g_inputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE))
-	{
-		//create weapon
-		kiko::Transform transform{m_transform.position, m_transform.rotation, 1};
-		std::unique_ptr<kiko::Laser> laser = std::make_unique<kiko::Laser>(400.0f, transform, m_model);
-		laser->m_tag = "PlayerLaser";
-		m_scene->Add(std::move(laser));
-	}
+    ///for out of bounds
+    m_transform.position.x = kiko::Wrap(m_transform.position.x, (float)kiko::g_renderer.getWidth());
+    m_transform.position.y = kiko::Wrap(m_transform.position.y, (float)kiko::g_renderer.getHeight());
+
+    float reverseThrust = 0; // backward movement
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_S)) {
+        reverseThrust = 1;
+    }
+    kiko::vec2 backward = kiko::vec2{ 0, 1 }.Rotate(m_transform.rotation);
+
+
+    kiko::vec2 netForce = forward * m_speed * (thrust - reverseThrust);
+
+    AddForce(netForce);
+
+    // Update position with the calculated net force
+    m_transform.position += netForce * kiko::g_time.GetDeltaTime();
+
+    // *Need to finish*Clamp the speed so it doesn't exceed the maximum speed in either direction
+
+   
+    ///Adding special movement
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_LSHIFT)) //&& !kiko::g_inputSystem.GetMousePreviousButtonDown(SDL_SCANCODE_LSHIFT))
+    {
+        m_isDashing = true;
+        kiko::vec2 dashDirection = forward;
+        AddForce(dashDirection * m_dashSpeed); // Add force in the dash direction
+    }
+    
+    if (m_isDashing)
+    {
+        m_dashDuration -= kiko::g_time.GetDeltaTime();
+        if (m_dashDuration <= 0.0f)
+        {
+            m_isDashing = false;
+            m_dashDuration = 0.1f; // Reset the dash duration for the next dash
+            std::cout << "dashing" << std::endl;
+        }
+    }
+
+//Actor::Update(dt);
+
+//fire weapon
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE) && !kiko::g_inputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE))
+    {
+        //create weapon
+        kiko::Transform transform{m_transform.position, m_transform.rotation, 1}; //include degrees to radians 10.0f + 1
+        std::unique_ptr<kiko::Laser> laser = std::make_unique<kiko::Laser>(400.0f, transform, m_model);//m_model is the weapons model !!change this.
+        laser->m_tag = "PlayerLaser";
+        m_scene->Add(std::move(laser));
+
+        //std::unique_ptr<kiko::Laser> laser = std::make_unique<kiko::Laser>(400.0f, transform, m_model);//m_model is the weapons model !!change this.
+        //laser->m_tag = "PlayerLaser";
+        //m_scene->Add(std::move(laser)); // make a split fire
+
+    }
+
+    if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_T)) kiko::g_time.SetTimeScale(.1f);
+    else kiko::g_time.SetTimeScale(1);
 }
 
 void Player::OnCollision(Actor* other)
 {
-	if (other->m_tag == "Enemy") // could be a enemies bullet
-	{
-		m_health -= 25;
-		if (m_health <= 0)
-		{
-			m_game->setLives(m_game->Getlives() - 1);
-			dynamic_cast<SpaceGame*>(m_game)->SetState(SpaceGame::eState::PlayerDead);
-
-			m_destroyed;
-		}
-	}
+    if (other->m_tag == "Enemy") // could be a enemies bullet
+    {
+            m_game->setLives(m_game->Getlives() - 1);
+            m_destroyed = true;
+    	  dynamic_cast<SpaceGame*>(m_game)->SetState(SpaceGame::eState::PlayerDeadStart);
+    }
 }

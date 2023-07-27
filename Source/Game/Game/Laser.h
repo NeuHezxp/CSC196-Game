@@ -16,6 +16,7 @@ namespace kiko
 		void Update(float dt) override; //dt for delta time
 		void OnCollision(Actor* other) override;
 	protected:
+		bool m_shoulddestroy = false;
 		float m_speed = 0;
 	};
 }

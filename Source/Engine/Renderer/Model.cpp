@@ -53,14 +53,13 @@ namespace kiko
 	float Model::GetRadius()//creating a circle around model for collision
 	{
 		if (m_radius) return m_radius; //if radius is != 0 return the radius
-		{
-			float radius = 0;
-		}
+		
 		for (auto point : m_points)
 		{
 			float length = point.length();
-			m_radius = Max(m_radius, length); // raidus = radius or length
+ 			m_radius = Max(m_radius, length); // raidus = radius or length
 		}
+
 		return m_radius;
 	}
 }

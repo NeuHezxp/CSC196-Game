@@ -33,6 +33,7 @@ public:
 	void Update()
 	{
 		m_pos += m_vel * kiko::g_time.GetDeltaTime();
+		
 	}
 
 	void Draw(kiko::Renderer& renderer)
@@ -49,9 +50,7 @@ int main(int argc, char* argv[])
 {
 	// random stuff for memeory
 	kiko::MemoryTracker::Initialize();
-	//std::unique_ptr<int> up = std::make_unique<int>(10);
-
-	//constexpr	float a = kiko::DegreesToRadians(180.0f);
+	
 	auto m = kiko::Max(4.0f, 3.0f);
 	auto m2 = kiko::Max(4, 3);
 
@@ -74,8 +73,8 @@ int main(int argc, char* argv[])
 
 	std::vector<Star> stars;
 
-	float speed = 400;
-	constexpr float turnRate = kiko::DegreesToRadians(180);
+	float speed = 500;
+	constexpr float turnRate = kiko::DegreesToRadians(360);
 
 	///Main Loop
 	bool quit = false;
@@ -92,7 +91,7 @@ int main(int argc, char* argv[])
 		{
 			quit = true;
 		}
-
+		kiko::g_audioSystem.PlayOneShot("background",true);//loops 
 		
 
 		///plays a one shot of a sound declared above.
@@ -100,6 +99,7 @@ int main(int argc, char* argv[])
 		{
 			kiko::g_audioSystem.PlayOneShot("hit");
 		}
+		
 
 		///update scene
 		game->Update(kiko::g_time.GetDeltaTime());

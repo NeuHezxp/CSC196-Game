@@ -1,5 +1,7 @@
 #pragma once
 #include <cmath>
+#include <algorithm>
+#include <utility>
 namespace kiko
 {
 	constexpr  float Pi = 3.14159265359f;
@@ -32,5 +34,11 @@ namespace kiko
 	{
 		if (min > max) std::swap(min, max);
 		return (value < min) ? min : (value > max) ? max : value;
+	}
+
+	template<typename T>//linear interpoation ///interpolates between to values moves along 
+	constexpr T Lerp(const T& a, const T& b, float t) ///between 2 points and moves there
+	{
+		return (a * (1.0f - t)) + (b * t);
 	}
 }
