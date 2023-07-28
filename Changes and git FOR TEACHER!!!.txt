@@ -1,0 +1,10 @@
+Changes:
+-Added extra movement like dashing with particles and reverse movement
+-Added a different enemy model
+-Added different states such as winning
+-Added restart function
+-Added Background music and extra sound effects
+
+Github:
+
+https://github.com/NeuHezxp/CSC196-Game.git
