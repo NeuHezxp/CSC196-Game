@@ -33,7 +33,6 @@ public:
 	void Update()
 	{
 		m_pos += m_vel * kiko::g_time.GetDeltaTime();
-		
 	}
 
 	void Draw(kiko::Renderer& renderer)
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
 {
 	// random stuff for memeory
 	kiko::MemoryTracker::Initialize();
-	
+
 	auto m = kiko::Max(4.0f, 3.0f);
 	auto m2 = kiko::Max(4, 3);
 
@@ -91,15 +90,13 @@ int main(int argc, char* argv[])
 		{
 			quit = true;
 		}
-		kiko::g_audioSystem.PlayOneShot("background",true);//loops 
-		
+		kiko::g_audioSystem.PlayOneShot("background", true);//loops
 
 		///plays a one shot of a sound declared above.
 		if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE))
 		{
 			kiko::g_audioSystem.PlayOneShot("hit");
 		}
-		
 
 		///update scene
 		game->Update(kiko::g_time.GetDeltaTime());

@@ -2,7 +2,6 @@
 #include "Renderer/Model.h"
 #include "Core/Core.h"
 
-
 namespace kiko
 {
 	class Scene;
@@ -44,6 +43,5 @@ namespace kiko
 
 		vec2 m_velocity;
 		float m_damping = 0;
-
 	};
 }

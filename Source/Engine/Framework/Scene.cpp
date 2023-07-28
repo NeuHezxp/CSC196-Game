@@ -32,7 +32,7 @@ namespace kiko
 
 					if (distance <= radius)
 					{
- 						(*iter1)->OnCollision(iter2->get());
+						(*iter1)->OnCollision(iter2->get());
 						(*iter2)->OnCollision(iter1->get());
 						//boom
 					}

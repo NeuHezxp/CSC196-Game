@@ -26,11 +26,13 @@ bool SpaceGame::Initialize()
 	m_timerText = std::make_unique<kiko::Text>(m_font);
 	m_timerText->Create(kiko::g_renderer, "Timer", kiko::Color{ 1, 1, 1, 1 });
 
+	m_winnerText = std::make_unique<kiko::Text>(m_font);
+	m_winnerText->Create(kiko::g_renderer, "You Win", kiko::Color{ 1, 1, 1, 1 });
+
 	//load background music
 	kiko::g_audioSystem.AddAudio("background", "background.wav");
 	//loading menu audio
 	kiko::g_audioSystem.AddAudio("menu", "restart.wav");
-	
 
 	//loading audio
 	kiko::g_audioSystem.AddAudio("explosion", "explosion.wav");
@@ -57,7 +59,11 @@ void SpaceGame::Update(float dt)
 		if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_SPACE))
 		{
 			m_state = eState::StartGame;
+
 		}
+		//reset score/timer
+		m_score = 0;
+		m_gameTimer = 0.0f;
 		break;
 	case SpaceGame::eState::StartGame:
 		m_score = 0;
@@ -81,6 +87,11 @@ void SpaceGame::Update(float dt)
 	case SpaceGame::eState::Game:
 		m_gameTimer += dt; // a timer that counts down
 		m_spawnTimer += dt;
+		//if the player lasts long enough
+		if (m_gameTimer >= 30.0f)
+		{
+			m_state = eState::Winner;
+		}
 
 		// Restart the game on 'R' key press
 		if (kiko::g_inputSystem.GetKeyDown(SDL_SCANCODE_R))
@@ -89,12 +100,11 @@ void SpaceGame::Update(float dt)
 			m_state = eState::Title;
 			m_scene->RemoveAll();
 		}
-		
 
 		if (m_spawnTimer >= m_spawnTime)
 		{
 			// spawn timer back to 0
-			m_spawnTimer =  0;
+			m_spawnTimer = 0;
 			// creates enemy after the timer hits 0
 			std::unique_ptr<Enemy> enemy = std::make_unique<Enemy>(kiko::randomf(75.0f, 150.0f), kiko::Pi, kiko::Transform{ {kiko::random(kiko::g_renderer.getWidth()), kiko::random(kiko::g_renderer.getHeight())}, kiko::randomf(kiko::TwoPi), 4 }, kiko::g_manager.Get("enemyship.txt"));
 			enemy->m_tag = "Enemy";
@@ -113,7 +123,7 @@ void SpaceGame::Update(float dt)
 				data.angle = 0;
 				data.angleRange = kiko::Pi;
 				data.lifetimeMin = 0.5f;
-				data.lifetimeMax = 1.5f; 
+				data.lifetimeMax = 1.5f;
 				data.speedMin = 50;
 				data.speedMax = 250;
 				data.damping = 0.5f;
@@ -129,11 +139,11 @@ void SpaceGame::Update(float dt)
 		m_stateTimer = 3;
 		m_state = eState::PlayerDead;
 		m_stateTimer -= dt;
-		
+
 		break;
 	case SpaceGame::eState::PlayerDead:
 		m_stateTimer -= dt;
-		if(m_stateTimer<= 0)
+		if (m_stateTimer <= 0)
 		{
 			m_state = eState::StartLevel;
 		}
@@ -146,11 +156,30 @@ void SpaceGame::Update(float dt)
 			m_state = eState::Title;
 		}
 		break;
+	case SpaceGame::eState::Winner:
+		m_scene->RemoveAll();
+		if (!m_waiting) // Check if the waiting process has started
+		{
+			m_waiting = true; // Set the waiting flag to true
+			m_stateTimer = 1.0f; // Set the waiting time to 1 second (or any desired value)
+		}
+		else
+		{
+			m_stateTimer -= dt;
+			if (m_stateTimer <= 0)
+			{
+				m_waiting = false; // Reset the waiting flag
+				m_scene->RemoveAll();
+				m_state = eState::Title; // Move to the Title state
+			}
+		}
+		break;
 	default:
 		break;
 	}
 	m_scoreText->Create(kiko::g_renderer, std::to_string(m_score), { 1, 1, 1, 1 });
 	m_timerText->Create(kiko::g_renderer, std::to_string((int)m_gameTimer), { 1, 1, 1, 1 });
+	m_winnerText->Create(kiko::g_renderer, ("Winner"), { 1, 1, 1, 1 });
 	m_scene->Update(dt);
 }
 
@@ -162,9 +191,14 @@ void SpaceGame::Draw(kiko::Renderer& renderer)
 	}
 	if (m_state == eState::GameOver)
 	{
-		m_gameovertext->Draw(renderer,600, 400);
+		m_gameovertext->Draw(renderer, 600, 400);
+	}
+	if (m_state == eState::Winner)
+	{
+		m_winnerText->Draw(kiko::g_renderer, 400, 200);
 	}
 	m_timerText->Draw(renderer, 400, 40);
+
 	m_scoreText->Draw(renderer, 40, 40);
 	m_scene->Draw(renderer);
 	kiko::g_particleSystem.Draw(renderer);
